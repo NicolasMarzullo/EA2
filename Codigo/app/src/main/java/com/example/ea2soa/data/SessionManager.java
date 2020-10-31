@@ -44,13 +44,19 @@ public class SessionManager {
     public Map<String, String> getTokens() {
         Map<String, String> tokens = new HashMap<String, String>();
         tokens.put("token", this.sharedPrefs.getString("token", ""));
-        tokens.put("refreshToken", this.sharedPrefs.getString("refreshtoken", ""));
+        tokens.put("refreshToken", this.sharedPrefs.getString("refreshToken", ""));
 
         return tokens;
     }
 
     public boolean isTokenExpired() {
         Long timeToken = this.sharedPrefs.getLong("timeToken", 0);
+
+        //Si el usuario nunca se registró, nunca va a tener un token guardado en el sharedPreferences
+        if(timeToken == 0){
+            return true;
+        }
+
         Date now = new Date();
         Long diff_in_ms = now.getTime() - timeToken;
         return (diff_in_ms >= time_token_expired_in_miliseconds);

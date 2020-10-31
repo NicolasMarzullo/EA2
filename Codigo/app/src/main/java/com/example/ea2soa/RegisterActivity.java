@@ -11,9 +11,11 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.example.ea2soa.data.AuthorizedRequest;
 import com.example.ea2soa.data.InternetConnection;
 import com.example.ea2soa.data.SoaErrorMessage;
 import com.example.ea2soa.data.SoaResponse;
+import com.example.ea2soa.data.model.Event;
 import com.example.ea2soa.data.model.User;
 import com.example.ea2soa.services.SoaService;
 import com.google.gson.Gson;
@@ -57,7 +59,7 @@ public class RegisterActivity extends AppCompatActivity {
                 newUser.setEmail(editTextEmail.getText().toString());
                 newUser.setPassword(editTextPassword.getText().toString());
 
-                if(newUser.validate()){
+                if (newUser.validate()) {
                     //Pongo el loader
                     loadingProgressBar.setVisibility(View.VISIBLE);
                     //Deshabilito el botón para que no toquen dos veces o mas
@@ -119,7 +121,7 @@ public class RegisterActivity extends AppCompatActivity {
                         }
                     });
 
-                }else{
+                } else {
                     Toast.makeText(getApplicationContext(), "Por favor verifique sus datos", Toast.LENGTH_LONG).show();
                 }
 
@@ -128,9 +130,10 @@ public class RegisterActivity extends AppCompatActivity {
 
         //Verifico conexion a Internet
         InternetConnection iConnection = new InternetConnection(getApplicationContext());
-        if(!iConnection.isInternetAvailable()){
+        if (!iConnection.isInternetAvailable()) {
             Toast.makeText(getApplicationContext(), "Ups, no tenés conexión a Internet :(", Toast.LENGTH_LONG).show();
         }
-
     }
+
+
 }

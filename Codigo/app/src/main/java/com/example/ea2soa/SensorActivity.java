@@ -14,6 +14,9 @@ import android.view.Display;
 import android.view.WindowManager;
 import android.widget.TextView;
 
+import com.example.ea2soa.data.AuthorizedRequest;
+import com.example.ea2soa.data.model.Event;
+
 import java.text.DecimalFormat;
 
 public class SensorActivity extends AppCompatActivity implements SensorEventListener {
@@ -53,6 +56,7 @@ public class SensorActivity extends AppCompatActivity implements SensorEventList
         // Uso el servicio de sensores mediante SensorManager
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
+        this.registerEvent();
 
     }
 
@@ -306,4 +310,19 @@ public class SensorActivity extends AppCompatActivity implements SensorEventList
 
         return txtDirection;
     }
+
+    /**
+     * Registra el evento de ingresar a ver los sensores en el servidor
+     */
+    public void registerEvent(){
+
+        AuthorizedRequest req = new AuthorizedRequest(getApplicationContext());
+        Event event = new Event();
+        event.setEnv(getString(R.string.server_enviroment));
+        event.setType_events("Sensores");
+        event.setDescription("Usuario ingresando a la vista de los sensores de su dispositivo");
+        req.registerEvent(event);
+    }
+
+
 }
