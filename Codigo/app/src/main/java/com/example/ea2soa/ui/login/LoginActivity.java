@@ -6,12 +6,14 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.se.omapi.Session;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -29,6 +31,7 @@ import com.example.ea2soa.R;
 import com.example.ea2soa.RegisterActivity;
 import com.example.ea2soa.SensorActivity;
 import com.example.ea2soa.data.InternetConnection;
+import com.example.ea2soa.data.SessionManager;
 import com.example.ea2soa.data.SoaErrorMessage;
 import com.example.ea2soa.data.SoaResponse;
 import com.example.ea2soa.data.model.User;
@@ -46,10 +49,11 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class LoginActivity extends AppCompatActivity {
 
     private LoginViewModel loginViewModel;
-
     private static final String TAG = "LoginActivity";
+    private SessionManager sessionManager;
     @Override
     public void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         loginViewModel = ViewModelProviders.of(this, new LoginViewModelFactory())
@@ -60,6 +64,8 @@ public class LoginActivity extends AppCompatActivity {
         final Button loginButton = findViewById(R.id.login);
         final ProgressBar loadingProgressBar = findViewById(R.id.loading);
         final Button registerButton = findViewById(R.id.registerButton);
+
+        this.sessionManager = new SessionManager(getApplicationContext());
 
 
         loginViewModel.getLoginFormState().observe(this, new Observer<LoginFormState>() {
@@ -139,7 +145,11 @@ public class LoginActivity extends AppCompatActivity {
                         if (response.isSuccessful()) {
                             Log.i(TAG, response.body().toString());
 
+                            //Guardo los tokens en el sharedPreferences
+                            sessionManager.storeTokens(response.body().getToken(), response.body().getToken_refresh());
+
                             //Voy al main activity
+                            finish(); //Cierro activity login
                             Intent i = new Intent(getApplicationContext(), MainActivity.class);
                             startActivity(i);
                         } else {
@@ -152,7 +162,7 @@ public class LoginActivity extends AppCompatActivity {
                         //saco el loader
                         loadingProgressBar.setVisibility(View.INVISIBLE);
                         Log.i(TAG, "Mensaje finalizado");
-                        //Habilito ols botones
+                        //Habilito los botones
                         loginButton.setEnabled(true);
                         registerButton.setEnabled(true);
                     }
@@ -189,5 +199,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
     }
+
+
 
 }

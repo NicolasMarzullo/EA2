@@ -1,11 +1,18 @@
 package com.example.ea2soa;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.se.omapi.Session;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Menu;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.example.ea2soa.data.BatteryStatus;
+import com.example.ea2soa.data.SessionManager;
+import com.example.ea2soa.ui.login.LoginActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
@@ -18,14 +25,21 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import java.util.Map;
+
 public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
+    private SessionManager sessionManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
+        this.sessionManager = new SessionManager(getApplicationContext());
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         FloatingActionButton fab = findViewById(R.id.fab);
@@ -50,7 +64,8 @@ public class MainActivity extends AppCompatActivity {
 
 
         BatteryStatus batStatus = new BatteryStatus(getApplicationContext());
-        Toast.makeText(getApplicationContext(), "Su porcentaje de batería es: " +  batStatus.getBatteryPercentage() + "%", Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), "Su porcentaje de batería es: " + batStatus.getBatteryPercentage() + "%", Toast.LENGTH_LONG).show();
+
     }
 
     @Override
@@ -66,4 +81,21 @@ public class MainActivity extends AppCompatActivity {
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+
+            case R.id.action_sensors:
+                Intent intent = new Intent(getApplicationContext(), SensorActivity.class);
+                startActivity(intent);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+
+        }
+    }
+
+
 }

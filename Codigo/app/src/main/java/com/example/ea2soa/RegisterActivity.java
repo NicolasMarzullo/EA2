@@ -86,6 +86,8 @@ public class RegisterActivity extends AppCompatActivity {
 
                                 Toast.makeText(getApplicationContext(), "Usuario registrado exitosamente", Toast.LENGTH_LONG).show();
                                 Log.i(TAG, response.body().toString());
+                                //Cierro activity register
+                                finish();
                                 //Voy al principal activity
                                 Intent i = new Intent(getApplicationContext(), MainActivity.class);
                                 startActivity(i);
