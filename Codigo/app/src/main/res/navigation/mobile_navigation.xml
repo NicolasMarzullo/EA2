@@ -12,14 +12,8 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/nav_gallery"
-        android:name="com.example.ea2soa.ui.gallery.GalleryFragment"
-        android:label="@string/menu_gallery"
+        android:id="@+id/nav_weather"
+        android:name="com.example.ea2soa.ui.weather.WeatherFragment"
+        android:label="@string/menu_weather"
         tools:layout="@layout/fragment_gallery" />
-
-    <fragment
-        android:id="@+id/nav_slideshow"
-        android:name="com.example.ea2soa.ui.slideshow.SlideshowFragment"
-        android:label="@string/menu_slideshow"
-        tools:layout="@layout/fragment_slideshow" />
 </navigation>
