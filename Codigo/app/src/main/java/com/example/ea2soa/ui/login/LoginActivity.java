@@ -147,6 +147,7 @@ public class LoginActivity extends AppCompatActivity {
 
                             //Guardo los tokens en el sharedPreferences
                             sessionManager.storeTokens(response.body().getToken(), response.body().getToken_refresh());
+                            sessionManager.storeEmail(emailEditText.getText().toString());
 
                             //Voy al main activity
                             finish(); //Cierro activity login
@@ -199,7 +200,5 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
     }
-
-
 
 }

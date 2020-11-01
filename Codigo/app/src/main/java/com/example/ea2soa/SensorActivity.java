@@ -3,6 +3,7 @@ package com.example.ea2soa;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -11,8 +12,11 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.ea2soa.data.AuthorizedRequest;
 import com.example.ea2soa.data.model.Event;
@@ -33,6 +37,8 @@ public class SensorActivity extends AppCompatActivity implements SensorEventList
     private TextView txtDetecta;
     private TextView txtGiro;
     private TextView txtPresion;
+    private SharedPreferences sharedPrefs;
+    private Button btnGuardarValores;
 
     DecimalFormat dosdecimales = new DecimalFormat("###.###");
 
@@ -51,12 +57,37 @@ public class SensorActivity extends AppCompatActivity implements SensorEventList
         txtGravedad = findViewById(R.id.txtGravedad);
         txtDetecta = findViewById(R.id.txtDetecta);
         txtGiro = findViewById(R.id.txtGiro);
-        txtPresion = findViewById(R.id.txtPresion);
+        this.btnGuardarValores = findViewById(R.id.btnGuardarValores);
+
+        this.sharedPrefs = getApplicationContext().getSharedPreferences("events", Context.MODE_PRIVATE);
 
         // Uso el servicio de sensores mediante SensorManager
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
         this.registerEvent();
+
+        this.btnGuardarValores.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                String txt = txtAcelerometro.getText().toString();
+
+                if(!txt.isEmpty()){
+                    //Guardo en el sharedPreferences
+                    sharedPrefs.edit().putString("accelerometer", txt).commit();
+                }
+
+                txt = txtGiroscopo.getText().toString();
+
+                if(!txt.isEmpty()){
+                    //Guardo en el sharedPreferences
+                    sharedPrefs.edit().putString("gyroscope", txt).commit();
+                }
+
+                Toast.makeText(getApplicationContext(), "Valores guardados correctamente :)!", Toast.LENGTH_SHORT).show();
+            }
+        });
+
 
     }
 
@@ -75,7 +106,6 @@ public class SensorActivity extends AppCompatActivity implements SensorEventList
         mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_LIGHT),           SensorManager.SENSOR_DELAY_NORMAL);
         mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_TEMPERATURE),     SensorManager.SENSOR_DELAY_NORMAL);
         mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY),         SensorManager.SENSOR_DELAY_NORMAL);
-        mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE),        SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     /**
@@ -93,7 +123,6 @@ public class SensorActivity extends AppCompatActivity implements SensorEventList
         mSensorManager.unregisterListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_TEMPERATURE));
         mSensorManager.unregisterListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY));
         mSensorManager.unregisterListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR));
-        mSensorManager.unregisterListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE));
     }
 
     /**
@@ -129,10 +158,12 @@ public class SensorActivity extends AppCompatActivity implements SensorEventList
                     txt += "z: " + dosdecimales.format(event.values[2]) + " m/seg2 \n";
                     txtAcelerometro.setText(txt);
 
+
+
                     if ((event.values[0] > 25) || (event.values[1] > 25) || (event.values[2] > 25))
                     {
-                        txtDetecta.setBackgroundColor(Color.parseColor("#cf091c"));
-                        txtDetecta.setText("Vibracion Detectada");
+                        txtDetecta.setBackgroundColor(Color.parseColor("#C39BD3"));
+                        txtDetecta.setText("Agitación Detectada");
                     }
                     break;
 
@@ -142,10 +173,12 @@ public class SensorActivity extends AppCompatActivity implements SensorEventList
                     txt += "y: " + dosdecimales.format(event.values[1]) + " deg/s \n";
                     txt += "z: " + dosdecimales.format(event.values[2]) + " deg/s \n";
                     txtGiroscopo.setText(txt);
+
+
                     break;
 
                 case Sensor.TYPE_ROTATION_VECTOR :
-                    txt += "Vector de rotaion:\n";
+                    txt += "Vector de rotacion:\n";
                     txt += "x: " + event.values[0] + "\n";
                     txt += "y: " + event.values[1] + "\n";
                     txt += "z: " + event.values[2] + "\n";
@@ -198,11 +231,10 @@ public class SensorActivity extends AppCompatActivity implements SensorEventList
 
                     txtProximidad.setText(txt);
 
-                    // Si detecta 0 lo represento
                     if( event.values[0] == 0 )
                     {
-                        txtDetecta.setBackgroundColor(Color.parseColor("#cf091c"));
-                        txtDetecta.setText("Proximidad Detectada");
+                        txtDetecta.setBackgroundColor(Color.parseColor("#C39BD3"));
+                        txtDetecta.setText("Sensor proximidad cubierto");
                     }
                     break;
 
@@ -212,14 +244,6 @@ public class SensorActivity extends AppCompatActivity implements SensorEventList
 
                     txtLuminosidad.setText(txt);
                     break;
-
-                case Sensor.TYPE_PRESSURE :
-                    txt += "Presion\n";
-                    txt += event.values[0] + " mBar \n";
-
-                    txtPresion.setText(txt);
-                    break;
-
                 case Sensor.TYPE_TEMPERATURE :
                     txt += "Temperatura\n";
                     txt += event.values[0] + " C \n";

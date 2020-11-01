@@ -47,32 +47,28 @@ public class AuthorizedRequest {
      * @param event
      */
     public void registerEvent(Event event) {
-
-        if (!this.sessionManager.isTokenExpired()) {
-            Map<String, String> tokens = this.sessionManager.getTokens();
-            Call<SoaResponse> call = soaService.event(event, "Bearer " + tokens.get("token"));
-            call.enqueue(new Callback<SoaResponse>() {
-                @Override
-                public void onResponse(Call<SoaResponse> call, Response<SoaResponse> response) {
-                    if(response.isSuccessful()){
-                        Log.i(TAG, "Evento registrado correctamente !" + response.errorBody().toString());
-                    }else{
-                        Log.e(TAG, "Hubo un problema al intentar registrar un evento" + response.errorBody().toString());
-                    }
+        Map<String, String> tokens = this.sessionManager.getTokens();
+        Call<SoaResponse> call = soaService.event(event, "Bearer " + tokens.get("token"));
+        call.enqueue(new Callback<SoaResponse>() {
+            @Override
+            public void onResponse(Call<SoaResponse> call, Response<SoaResponse> response) {
+                if (response.isSuccessful()) {
+                    Log.i(TAG, "Evento registrado correctamente !" + response.body().toString());
+                } else {
+                    Log.e(TAG, "Hubo un problema al intentar registrar un evento" + response.errorBody().toString());
                 }
+            }
 
-                @Override
-                public void onFailure(Call<SoaResponse> call, Throwable t) {
-                    Toast.makeText(context, "Ups, el servidor no está operativo :(", Toast.LENGTH_LONG).show();
-                    Log.e(TAG, "Error en la respuesta del servidor al intentar registrar un evento " + t.getMessage().toString());
-                }
-            });
-        }else{
-            this.refreshToken();;
-        }
+            @Override
+            public void onFailure(Call<SoaResponse> call, Throwable t) {
+                Toast.makeText(context, "Ups, el servidor no está operativo :(", Toast.LENGTH_LONG).show();
+                Log.e(TAG, "Error en la respuesta del servidor al intentar registrar un evento " + t.getMessage().toString());
+            }
+        });
+
     }
 
-    public void refreshToken(){
+    public void refreshToken() {
         Map<String, String> tokens = this.sessionManager.getTokens();
         Call<SoaResponse> call = soaService.refresh_token(tokens.get("refreshToken"));
 
@@ -80,10 +76,10 @@ public class AuthorizedRequest {
             @Override
             public void onResponse(Call<SoaResponse> call, Response<SoaResponse> response) {
 
-                if(response.isSuccessful()){
+                if (response.isSuccessful()) {
                     Log.i(TAG, "Token refrescado correctamente!!");
-                    sessionManager.storeTokens(response.body().getToken(), response.body().getToken_refresh());
-                }else{
+                    sessionManager.storeTokens(response.body().getToken(), response.body().getToken_refresh()); //Guardo los tokens nuevos
+                } else {
                     Log.e(TAG, "Hubo un problema al intentar refrescar el token" + response.errorBody().toString());
                 }
             }

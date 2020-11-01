@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.example.ea2soa.data.AuthorizedRequest;
 import com.example.ea2soa.data.InternetConnection;
+import com.example.ea2soa.data.SessionManager;
 import com.example.ea2soa.data.SoaErrorMessage;
 import com.example.ea2soa.data.SoaResponse;
 import com.example.ea2soa.data.model.Event;
@@ -29,6 +30,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class RegisterActivity extends AppCompatActivity {
 
     private static final String TAG = "RegisterActivity";
+    private SessionManager sessionManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +45,8 @@ public class RegisterActivity extends AppCompatActivity {
         final EditText editTextEmail = findViewById(R.id.editTextEmail);
         final EditText editTextPassword = findViewById(R.id.editTextPassword);
         final ProgressBar loadingProgressBar = findViewById(R.id.loading);
+
+        this.sessionManager = new SessionManager(getApplicationContext());
 
 
         final Button btnRegister = findViewById(R.id.registerButton);
@@ -86,6 +90,11 @@ public class RegisterActivity extends AppCompatActivity {
                                 editTextEmail.setText("");
                                 editTextPassword.setText("");
 
+
+                                //Guardo los tokens en el sharedPreferences
+                                sessionManager.storeTokens(response.body().getToken(), response.body().getToken_refresh());
+                                sessionManager.storeEmail(editTextEmail.getText().toString());
+                                
                                 Toast.makeText(getApplicationContext(), "Usuario registrado exitosamente", Toast.LENGTH_LONG).show();
                                 Log.i(TAG, response.body().toString());
                                 //Cierro activity register

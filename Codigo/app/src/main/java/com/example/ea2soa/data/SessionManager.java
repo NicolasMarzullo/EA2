@@ -51,15 +51,37 @@ public class SessionManager {
 
     public boolean isTokenExpired() {
         Long timeToken = this.sharedPrefs.getLong("timeToken", 0);
+        String token = this.sharedPrefs.getString("token", "");
+        String refreshToken = this.sharedPrefs.getString("refreshToken", "");
 
         //Si el usuario nunca se registró, nunca va a tener un token guardado en el sharedPreferences
-        if(timeToken == 0){
+        //Tambien me fijo que los token existan y no esten vacíos
+        if(timeToken == 0 || token.isEmpty() || refreshToken.isEmpty()){
             return true;
         }
 
         Date now = new Date();
         Long diff_in_ms = now.getTime() - timeToken;
         return (diff_in_ms >= time_token_expired_in_miliseconds);
+    }
+
+    /**
+     * Pone en blanco los tokens. Se utiliza para el logout
+     */
+    public void endSession(){
+        this.sharedPrefs.edit().putString("token", "").commit();
+        this.sharedPrefs.edit().putString("refreshToken", "").commit();
+    }
+
+    /**
+     * Guarda el email en el SharedPreferences para luego mostrarlo en el nav bar
+     */
+    public void storeEmail(String email){
+        this.sharedPrefs.edit().putString("email", email).commit();
+    }
+
+    public String getEmail(){
+        return this.sharedPrefs.getString("email", "");
     }
 }
 
