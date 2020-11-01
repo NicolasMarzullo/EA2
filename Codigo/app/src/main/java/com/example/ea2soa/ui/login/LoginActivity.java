@@ -51,6 +51,7 @@ public class LoginActivity extends AppCompatActivity {
     private LoginViewModel loginViewModel;
     private static final String TAG = "LoginActivity";
     private SessionManager sessionManager;
+    private InternetConnection iConnection;
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
@@ -65,7 +66,16 @@ public class LoginActivity extends AppCompatActivity {
         final ProgressBar loadingProgressBar = findViewById(R.id.loading);
         final Button registerButton = findViewById(R.id.registerButton);
 
+        this.iConnection = new InternetConnection(getApplicationContext());
+
         this.sessionManager = new SessionManager(getApplicationContext());
+
+        //Si tiene token (activo) e Internet, envio al usuario al mainActivity
+        if(!this.sessionManager.isTokenExpired() && this.iConnection.isInternetAvailable()){
+            redirectToMain();
+            return;
+        }
+
 
 
         loginViewModel.getLoginFormState().observe(this, new Observer<LoginFormState>() {
@@ -185,8 +195,8 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         //Verifico conexion a Internet
-        InternetConnection iConnection = new InternetConnection(getApplicationContext());
-        if(!iConnection.isInternetAvailable()){
+
+        if(!this.iConnection.isInternetAvailable()){
             Toast.makeText(getApplicationContext(), "Ups, no tenés conexión a Internet :(", Toast.LENGTH_LONG).show();
         }
 
@@ -199,6 +209,12 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    public void redirectToMain(){
+        finish(); //finalizo esta activity
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        startActivity(intent);
     }
 
 }

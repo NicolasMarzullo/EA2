@@ -17,7 +17,7 @@ public class SessionManager {
     private final Context context;
     private final SharedPreferences sharedPrefs;
     //Esto debería ser enviado por el server, pero como es un valor que desconozco quedara harcodeado hasta que el server envie el tiempo de expiración del token
-    private static final long time_token_expired_in_miliseconds = 1800000; // 30 minutes in miliseconds
+    private static final long time_token_expired_in_miliseconds = 1500000; // 25 minutes in miliseconds
 
     public SessionManager(Context context) {
         this.context = context;
@@ -65,6 +65,12 @@ public class SessionManager {
         return (diff_in_ms >= time_token_expired_in_miliseconds);
     }
 
+    public boolean userHasTokens(){
+        String token = this.sharedPrefs.getString("token", "");
+        String refreshToken = this.sharedPrefs.getString("refreshToken", "");
+
+        return !token.isEmpty() && !refreshToken.isEmpty();
+    }
     /**
      * Pone en blanco los tokens. Se utiliza para el logout
      */

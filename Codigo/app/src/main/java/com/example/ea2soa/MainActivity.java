@@ -48,12 +48,6 @@ public class MainActivity extends AppCompatActivity {
 
         this.sessionManager = new SessionManager(getApplicationContext());
 
-        //Valido que tenga token al iniciar la app
-        if(this.sessionManager.isTokenExpired()){
-            redirectToLogin();
-            return;
-        }
-
         //Inicio el thread que verifica la vigencia del token
         this.tokenRefresher = new TokenRefresher(getApplicationContext());
         this.tokenRefresher.start();

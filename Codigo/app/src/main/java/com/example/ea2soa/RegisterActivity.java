@@ -18,6 +18,7 @@ import com.example.ea2soa.data.SoaErrorMessage;
 import com.example.ea2soa.data.SoaResponse;
 import com.example.ea2soa.data.model.Event;
 import com.example.ea2soa.data.model.User;
+import com.example.ea2soa.data.model.UserValidate;
 import com.example.ea2soa.services.SoaService;
 import com.google.gson.Gson;
 
@@ -58,12 +59,22 @@ public class RegisterActivity extends AppCompatActivity {
                 newUser.setEnv(getString(R.string.server_enviroment));
                 newUser.setName(editTextNombre.getText().toString());
                 newUser.setLastname(editTextApellido.getText().toString());
-                newUser.setDni(Long.parseLong(editTextDNI.getText().toString()));
-                newUser.setCommission(Long.parseLong(editTextCommission.getText().toString()));
+                if(!editTextDNI.getText().toString().isEmpty()){
+                    newUser.setDni(Long.parseLong(editTextDNI.getText().toString()));
+                }else{
+                    newUser.setDni(new Long(0));
+                }
+                if(!editTextCommission.getText().toString().isEmpty()){
+                    newUser.setCommission(Long.parseLong(editTextCommission.getText().toString()));
+                }else{
+                    newUser.setCommission(new Long(0));
+                }
                 newUser.setEmail(editTextEmail.getText().toString());
                 newUser.setPassword(editTextPassword.getText().toString());
 
-                if (newUser.validate()) {
+                UserValidate userValidate = newUser.validate();
+
+                if (userValidate.isSuccess()) {
                     //Pongo el loader
                     loadingProgressBar.setVisibility(View.VISIBLE);
                     //Deshabilito el botón para que no toquen dos veces o mas
@@ -131,7 +142,7 @@ public class RegisterActivity extends AppCompatActivity {
                     });
 
                 } else {
-                    Toast.makeText(getApplicationContext(), "Por favor verifique sus datos", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), userValidate.getMsg(), Toast.LENGTH_LONG).show();
                 }
 
             }

@@ -5,6 +5,8 @@ import android.util.Patterns;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
+
 public class User {
     @SerializedName("env")
     private String env;
@@ -87,16 +89,84 @@ public class User {
      * Valida los datos de un usuario antes de mandar a registrarlo
      * @return
      */
-    public boolean validate(){
+    public UserValidate validate(){
 
-        if(this.name.isEmpty() || this.lastname.isEmpty() || this.dni == null || this.email.isEmpty() || this.password.isEmpty() || this.password.length() < 8 || this.commission == null){
-            return false;
+        UserValidate userValidate = new UserValidate();
+        if(this.name.isEmpty()){
+            userValidate.setMsg("El nombre está vacio");
+            userValidate.setSuccess(false);
+            return userValidate;
         }
-        if (this.email.contains("@")) {
-            return Patterns.EMAIL_ADDRESS.matcher(this.email).matches();
-        } else {
-            return !this.email.trim().isEmpty();
+        if(!this.name.matches("[a-zA-Z0-9]+")){
+            userValidate.setMsg("El nombre debe ser alfanumérico");
+            userValidate.setSuccess(false);
+            return userValidate;
         }
+
+        if(this.lastname.isEmpty()){
+            userValidate.setMsg("El apellido está vacio");
+            userValidate.setSuccess(false);
+            return userValidate;
+        }
+        if(!this.lastname.matches("[a-zA-Z0-9]+")){
+            userValidate.setMsg("El apellido debe ser alfanumérico");
+            userValidate.setSuccess(false);
+            return userValidate;
+        }
+
+        if(this.dni == 0){
+            userValidate.setMsg("El DNI es inválido");
+            userValidate.setSuccess(false);
+            return userValidate;
+        }
+
+        if(!(String.valueOf(this.dni).matches("[0-9]+"))){
+            userValidate.setMsg("El DNI debe contener SOLO números");
+            userValidate.setSuccess(false);
+            return userValidate;
+        }
+
+        if(this.email.isEmpty()){
+            userValidate.setMsg("El email está vacio");
+            userValidate.setSuccess(false);
+            return userValidate;
+        }
+        if(!Patterns.EMAIL_ADDRESS.matcher(this.email).matches()){
+            userValidate.setMsg("El email tiene un formato inválido");
+            userValidate.setSuccess(false);
+            return userValidate;
+        }
+
+        if(this.password.isEmpty()){
+            userValidate.setMsg("La contraseña está vacía");
+            userValidate.setSuccess(false);
+            return userValidate;
+        }
+
+        if(this.password.length() < 8){
+            userValidate.setMsg("La contraseña debe tener como mínimo 8 caracteres");
+            userValidate.setSuccess(false);
+            return userValidate;
+        }
+
+        if(!(String.valueOf(this.commission).matches("[0-9]+"))){
+            userValidate.setMsg("La comisión debe contener sólo números");
+            userValidate.setSuccess(false);
+            return userValidate;
+        }
+
+        if(this.commission == 0){
+            userValidate.setMsg("La comisión es inválida");
+            userValidate.setSuccess(false);
+            return userValidate;
+        }
+
+
+        this.email = this.email.trim();
+
+        userValidate.setSuccess(true);
+        userValidate.setMsg("Los datos son correctos");
+        return userValidate;
 
     }
 }
