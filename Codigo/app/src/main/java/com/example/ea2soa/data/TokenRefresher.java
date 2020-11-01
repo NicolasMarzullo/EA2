@@ -35,7 +35,6 @@ public class TokenRefresher extends Thread{
             if((currentTime - time) >= ms_to_wait){ // Verifico el token cada 500 ms (medio segudo)
                 time = currentTime;
 
-                System.out.println("VERIFICANDO VIGENCIA TOKEN");
                 if(this.sessionManager.isTokenExpired()){
                     this.authorizedRequest.refreshToken();
                 }

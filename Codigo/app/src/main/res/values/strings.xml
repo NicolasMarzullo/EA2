@@ -22,5 +22,7 @@
     <string name="invalid_password">La contraseña debe tener como mínimo 8 caracteres</string>
     <string name="login_failed">"Login failed"</string>
     <string name="retrofit_server">http://so-unlam.net.ar/api/</string>
+    <string name="server_weather">http://api.openweathermap.org/data/2.5/</string>
     <string name="server_enviroment">PROD</string>
+    <string name="app_id_open_weather_map">84603fff15090a05b02059fa374d9607</string>
 </resources>

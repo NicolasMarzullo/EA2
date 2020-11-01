@@ -1,15 +1,12 @@
 package com.example.ea2soa.ui.weather;
 
-import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -19,13 +16,23 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.example.ea2soa.R;
+import com.example.ea2soa.data.Utils;
+import com.example.ea2soa.data.WeatherRequest;
+import com.example.ea2soa.data.model.City;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.List;
 
 public class WeatherFragment extends Fragment {
 
     private WeatherViewModel weatherViewModel;
     private Spinner select_city;
+    private ArrayList<String> cities_name_list;
+    private ArrayList<Integer> cities_id_list;
+    private WeatherRequest weatherRequest;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -40,35 +47,41 @@ public class WeatherFragment extends Fragment {
             }
         });
 
+        this.weatherRequest = new WeatherRequest(getContext());
+        inicializarSelectCiudades(root);
 
-        inicializarSelectCiudades();
+        return root;
+    }
 
+    public void inicializarSelectCiudades(View root) {
         //Dropdown ciudades
 
         select_city = root.findViewById(R.id.select_city);
-        ArrayList<String> numberList = new ArrayList<>();
-        numberList.add("Select Number");
-        numberList.add("One");
-        numberList.add("Two");
-        numberList.add("Three");
-        numberList.add("Four");
-        numberList.add("Five");
-        numberList.add("Six");
+        //Array para llenar el select
+        this.cities_name_list = new ArrayList<>();
+        //Array para obtener el id
+        this.cities_id_list = new ArrayList<>();
 
+        List<City> cities = getCitiesFromJsonFile();
+        for (int i = 0; i < cities.size(); i++) {
+            cities_name_list.add(cities.get(i).getName());
+            cities_id_list.add(cities.get(i).getId());
+        }
 
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this.getActivity(), android.R.layout.simple_spinner_item, numberList);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this.getActivity(), android.R.layout.simple_spinner_item, cities_name_list);
         select_city.setAdapter(adapter);
 
         select_city.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if(position == 0){
-                    Toast.makeText(getContext(),"Seleccione un numero", Toast.LENGTH_LONG).show();;
-                }else{
-                    String sNumber =parent.getItemAtPosition(position).toString();
-                    System.out.println(sNumber);
-                }
+
+                String sNumber = parent.getItemAtPosition(position).toString();
+                System.out.println(sNumber);
+                int city_id = cities_id_list.get(position);
+                System.out.println(city_id);
+                weatherRequest.getDataWeather(city_id);
+
+
             }
 
             @Override
@@ -76,11 +89,15 @@ public class WeatherFragment extends Fragment {
 
             }
         });
-
-        return root;
     }
 
-    public void inicializarSelectCiudades(){
-        
+    public List<City> getCitiesFromJsonFile() {
+        Gson gson = new Gson();
+
+        String jsonFileString = Utils.getJsonFromAssets(getContext(), "ciudades_argentinas.json");
+        Type listCityType = new TypeToken<List<City>>() {
+        }.getType();
+        List<City> cities = gson.fromJson(jsonFileString, listCityType);
+        return cities;
     }
 }
