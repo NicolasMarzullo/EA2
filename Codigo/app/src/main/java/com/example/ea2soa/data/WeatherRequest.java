@@ -2,6 +2,8 @@ package com.example.ea2soa.data;
 
 import android.content.Context;
 import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.ea2soa.R;
@@ -9,6 +11,7 @@ import com.example.ea2soa.data.model.Event;
 import com.example.ea2soa.services.OpenWeatherMapService;
 import com.example.ea2soa.services.SoaService;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 import retrofit2.Call;
@@ -38,27 +41,54 @@ public class WeatherRequest {
     /**
      * Realiza la request a la APi para obtener los datos del clima
      */
-    public void getDataWeather(int city_id) {
+    public void getDataWeather(final int city_id, final ArrayList<TextView> outputs) {
 
         Call<WeatherResponse> call = this.openWeatherMapService.getWeather(city_id, this.context.getResources().getString(R.string.app_id_open_weather_map), "es");
         call.enqueue(new Callback<WeatherResponse>() {
             @Override
             public void onResponse(Call<WeatherResponse> call, Response<WeatherResponse> response) {
                 if (response.isSuccessful()) {
-                    Log.i(TAG, "Evento registrado correctamente !" + response.body().toString());
-                    System.out.println("");
+                    Log.i(TAG, "Clima obtenido correctamente !" + response.body().toString());
+
+
+                    //Pongo los datos en la vista
+
+                    outputs.get(0).setText(String.format("%.1f", kelvinToCelsius(response.body().getMain().getTemp_min())) + " °C"); //Temperatura mínima
+                    outputs.get(1).setText(String.format("%.1f", kelvinToCelsius(response.body().getMain().getTemp_max())) + " °C"); //Temperatura maxima
+                    outputs.get(2).setText(String.valueOf(response.body().getMain().getHumidity()) + " %"); //Humedad
+                    outputs.get(3).setText(String.format("%.1f", kelvinToCelsius(response.body().getMain().getFeels_like())) + " °C"); //Sensacion térmica
+                    outputs.get(4).setText(String.format("%.1f", kelvinToCelsius(response.body().getMain().getTemp())) + " °C"); //Temperatura
+                    outputs.get(5).setText("Estado del clima: " + response.body().getWeaters().get(0).getDescription()); //Descripcion del clima
+
+                    showOutputs(outputs);
                 } else {
-                    Log.e(TAG, "Hubo un problema al intentar registrar un evento" + response.errorBody().toString());
+                    Log.e(TAG, "Hubo un problema al intentar obtener el clima" + response.errorBody().toString());
+                    hideOutputs(outputs);
                 }
-                //responseBody.getW
             }
 
             @Override
             public void onFailure(Call<WeatherResponse> call, Throwable t) {
-                Toast.makeText(context, "Ups, el servidor no está operativo :(", Toast.LENGTH_LONG).show();
-                Log.e(TAG, "Error en la respuesta del servidor al intentar registrar un evento " + t.getMessage().toString());
+                Toast.makeText(context, "Ups, el servidor del clima no está operativo :(", Toast.LENGTH_LONG).show();
+                Log.e(TAG, "Error en la respuesta del servidor del clima: " + t.getMessage().toString());
+                hideOutputs(outputs);
             }
         });
+    }
 
+    public Double kelvinToCelsius(Double kelvin) {
+        return kelvin - 273.15;
+    }
+
+    public void showOutputs(ArrayList<TextView> outputs){
+        for (int i = 0; i < outputs.size(); i++) {
+            outputs.get(i).setVisibility(View.VISIBLE);
+        }
+    }
+
+    public void hideOutputs(ArrayList<TextView> outputs){
+        for (int i = 0; i < outputs.size(); i++) {
+            outputs.get(i).setVisibility(View.INVISIBLE);
+        }
     }
 }

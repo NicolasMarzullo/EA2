@@ -19,7 +19,7 @@
         app:layout_constraintVertical_bias="0.035" />
 
     <TextView
-        android:id="@+id/textView4"
+        android:id="@+id/titleSensacionTermica"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Proximidad"
@@ -187,7 +187,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textView5"
+        android:id="@+id/titleTemperatura"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Magnetico"

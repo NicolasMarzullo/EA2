@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -22,6 +23,9 @@ import com.example.ea2soa.data.model.City;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import org.w3c.dom.Text;
+
+import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +37,18 @@ public class WeatherFragment extends Fragment {
     private ArrayList<String> cities_name_list;
     private ArrayList<Integer> cities_id_list;
     private WeatherRequest weatherRequest;
+    private TextView txtTempMin;
+    private TextView txtTempMax;
+    private TextView txtHumedad;
+    private TextView txtSensacionTermica;
+    private TextView txtTemperatura;
+    private TextView txtDescripcion;
+    private TextView titleTempMin;
+    private TextView titleTempMax;
+    private TextView titleHumedad;
+    private TextView titleSensacionTermica;
+    private TextView titleTemperatura;
+
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -50,6 +66,20 @@ public class WeatherFragment extends Fragment {
         this.weatherRequest = new WeatherRequest(getContext());
         inicializarSelectCiudades(root);
 
+        //Obtengo los txt
+        this.txtTempMin =  root.findViewById(R.id.txtTempMin);
+        this.txtTempMax =  root.findViewById(R.id.textTempMax);
+        this.txtHumedad =  root.findViewById(R.id.txtHumedad);
+        this.txtTemperatura =  root.findViewById(R.id.txtTemperatura);
+        this.txtSensacionTermica =  root.findViewById(R.id.txtSensacionTermica);
+        this.txtDescripcion = root.findViewById(R.id.txtDescripcion);
+
+        //Obtengo los title
+        this.titleTempMin = root.findViewById(R.id.titleTempMin);
+        this.titleTempMax = root.findViewById(R.id.titleTempMax);
+        this.titleHumedad = root.findViewById(R.id.titleHumedad);
+        this.titleSensacionTermica = root.findViewById(R.id.titleSensacionTermica);
+        this.titleTemperatura = root.findViewById(R.id.titleTemperatura);
         return root;
     }
 
@@ -59,8 +89,11 @@ public class WeatherFragment extends Fragment {
         select_city = root.findViewById(R.id.select_city);
         //Array para llenar el select
         this.cities_name_list = new ArrayList<>();
+        this.cities_name_list.add("Seleccione una ciudad");
         //Array para obtener el id
         this.cities_id_list = new ArrayList<>();
+
+        this.cities_id_list.add(-1);
 
         List<City> cities = getCitiesFromJsonFile();
         for (int i = 0; i < cities.size(); i++) {
@@ -75,13 +108,28 @@ public class WeatherFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
-                String sNumber = parent.getItemAtPosition(position).toString();
-                System.out.println(sNumber);
-                int city_id = cities_id_list.get(position);
-                System.out.println(city_id);
-                weatherRequest.getDataWeather(city_id);
+
+                if(position != 0){
+                    int city_id = cities_id_list.get(position);
+                    //Le mando todos los textView para que pueda modificarlos cuando responde la API ya que la request es asincrona
+                    ArrayList<TextView> outputs = new ArrayList<>();
+
+                    outputs.add(txtTempMin);
+                    outputs.add(txtTempMax);
+                    outputs.add(txtHumedad);
+                    outputs.add(txtSensacionTermica);
+                    outputs.add(txtTemperatura);
+                    outputs.add(txtDescripcion);
+
+                    outputs.add(titleTempMin);
+                    outputs.add(titleTempMax);
+                    outputs.add(titleHumedad);
+                    outputs.add(titleSensacionTermica);
+                    outputs.add(titleTemperatura);
 
 
+                    weatherRequest.getDataWeather(city_id, outputs);
+                }
             }
 
             @Override
